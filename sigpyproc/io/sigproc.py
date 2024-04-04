@@ -334,7 +334,7 @@ def parse_radec(src_raj: float, src_dej: float) -> SkyCoord:
     if int(ami)>=60:
         _ami = int(ami)
         _ami -= 60
-        de = str(int(de)+1)
+        de = str(int(de)-1)
         ami = str(_ami)
 
     radec_str = f"{int(ho)} {int(mi)} {se} {sign* int(de)} {int(ami)} {ase}"
