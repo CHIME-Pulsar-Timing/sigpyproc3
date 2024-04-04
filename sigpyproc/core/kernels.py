@@ -108,7 +108,7 @@ def downsample_1d(array, factor):
 @njit(
     ["u1[:](u1[:], i4, i4, i4, i4)", "f4[:](f4[:], i4, i4, i4, i4)"],
     cache=True,
-    parallel=True,
+    parallel=False,
     locals={"temp": types.f8},
 )
 def downsample_2d(array, tfactor, ffactor, nchans, nsamps):

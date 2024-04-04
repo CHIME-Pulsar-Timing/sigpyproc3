@@ -327,6 +327,15 @@ def parse_radec(src_raj: float, src_dej: float) -> SkyCoord:
     sign = -1 if src_dej < 0 else 1
     de, ami = divmod(abs(src_dej), 10000)  # noqa: WPS432
     ami, ase = divmod(ami, 100)
+    if ase>=60:
+        ase-=60
+        ami = str(int(ami)+1)
+
+    if int(ami)>=60:
+        _ami = int(ami)
+        _ami -= 60
+        de = str(int(de)+1)
+        ami = str(_ami)
 
     radec_str = f"{int(ho)} {int(mi)} {se} {sign* int(de)} {int(ami)} {ase}"
     return SkyCoord(radec_str, unit=(units.hourangle, units.deg))
