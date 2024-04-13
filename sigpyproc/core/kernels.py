@@ -5,7 +5,7 @@ from numba.experimental import jitclass
 from scipy import constants
 
 
-@njit("u1[:](u1[:], u1[:])", cache=True, parallel=True)
+@njit("u1[:](u1[:], u1[:])", cache=True, parallel=False)
 def unpack1_8(array, unpacked):
     bitfact = 8
     for ii in prange(array.size):
@@ -20,7 +20,7 @@ def unpack1_8(array, unpacked):
     return unpacked
 
 
-@njit("u1[:](u1[:], u1[:])", cache=True, parallel=True)
+@njit("u1[:](u1[:], u1[:])", cache=True, parallel=False)
 def unpack2_8(array, unpacked):
     bitfact = 8 // 2
     for ii in prange(array.size):
@@ -31,7 +31,7 @@ def unpack2_8(array, unpacked):
     return unpacked
 
 
-@njit("u1[:](u1[:], u1[:])", cache=True, parallel=True)
+@njit("u1[:](u1[:], u1[:])", cache=True, parallel=False)
 def unpack4_8(array, unpacked):
     bitfact = 8 // 4
     for ii in prange(array.size):
@@ -41,7 +41,7 @@ def unpack4_8(array, unpacked):
     return unpacked
 
 
-@njit("u1[:](u1[:])", cache=True, parallel=True)
+@njit("u1[:](u1[:])", cache=True, parallel=False)
 def pack2_8(array):
     bitfact = 8 // 2
     packed = np.zeros(shape=array.size // bitfact, dtype=np.uint8)
@@ -56,7 +56,7 @@ def pack2_8(array):
     return packed
 
 
-@njit("u1[:](u1[:])", cache=True, parallel=True)
+@njit("u1[:](u1[:])", cache=True, parallel=False)
 def pack4_8(array):
     bitfact = 8 // 4
     packed = np.zeros(shape=array.size // bitfact, dtype=np.uint8)
@@ -131,7 +131,7 @@ def downsample_2d(array, tfactor, ffactor, nchans, nsamps):
 @njit(
     ["void(u1[:], f4[:], i4, i4, i4)", "void(f4[:], f4[:], i4, i4, i4)"],
     cache=True,
-    parallel=True,
+    parallel=False,
 )
 def extract_tim(inarray, outarray, nchans, nsamps, index):
     for isamp in prange(nsamps):
@@ -142,7 +142,7 @@ def extract_tim(inarray, outarray, nchans, nsamps, index):
 @njit(
     ["void(u1[:], f4[:], i4, i4)", "void(f4[:], f4[:], i4, i4)"],
     cache=True,
-    parallel=True,
+    parallel=False,
 )
 def extract_bpass(inarray, outarray, nchans, nsamps):
     for ichan in prange(nchans):
@@ -153,7 +153,7 @@ def extract_bpass(inarray, outarray, nchans, nsamps):
 @njit(
     ["void(u1[:], b1[:], u1, i4, i4)", "void(f4[:], b1[:], f4, i4, i4)"],
     cache=True,
-    parallel=True,
+    parallel=False,
 )
 def mask_channels(array, mask, maskvalue, nchans, nsamps):
     for ichan in prange(nchans):
@@ -168,7 +168,7 @@ def mask_channels(array, mask, maskvalue, nchans, nsamps):
         "void(f4[:], f4[:], i4[:], i4, i4, i4, i4)",
     ],
     cache=True,
-    parallel=True,
+    parallel=False,
 )
 def dedisperse(inarray, outarray, delays, maxdelay, nchans, nsamps, index):
     for isamp in prange(nsamps - maxdelay):
@@ -179,7 +179,7 @@ def dedisperse(inarray, outarray, delays, maxdelay, nchans, nsamps, index):
 @njit(
     ["u1[:](u1[:], i4, i4)", "f4[:](f4[:], i4, i4)"],
     cache=True,
-    parallel=True,
+    parallel=False,
 )
 def invert_freq(array, nchans, nsamps):
     outarray = np.empty_like(array)
@@ -197,7 +197,7 @@ def invert_freq(array, nchans, nsamps):
         "void(f4[:], f4[:], i4[:], i4[:], i4, i4, i4, i4)",
     ],
     cache=True,
-    parallel=True,
+    parallel=False,
 )
 def subband(inarray, outarray, delays, chan_to_sub, maxdelay, nchans, nsubs, nsamps):
     for isamp in prange(nsamps - maxdelay):
@@ -272,7 +272,7 @@ def resample_tim(array, accel, tsamp):
         "void(f4[:], f4[:], f4[:], f4[:], i4, i4)",
     ],
     cache=True,
-    parallel=True,
+    parallel=False,
     locals={"zerodm": types.f8},
 )
 def remove_zerodm(inarray, outarray, bpass, chanwts, nchans, nsamps):
@@ -410,7 +410,7 @@ class MomentsBag(object):
         self.count = np.zeros(nchans, dtype=np.int32)
 
 
-@njit(cache=True, parallel=True, locals={"val": types.f8})
+@njit(cache=True, parallel=False, locals={"val": types.f8})
 def compute_online_moments_basic(array, bag, nsamps, startflag):
     if startflag == 0:
         for ii in range(bag.nchans):
@@ -432,7 +432,7 @@ def compute_online_moments_basic(array, bag, nsamps, startflag):
             bag.min[ichan] = min(bag.min[ichan], val)
 
 
-@njit(cache=True, parallel=True, locals={"val": types.f8})
+@njit(cache=True, parallel=False, locals={"val": types.f8})
 def compute_online_moments(array, bag, nsamps, startflag):
     """Computing central moments in one pass through the data."""
     if startflag == 0:
